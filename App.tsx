@@ -6,11 +6,16 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  PermissionsAndroid,
+  Modal,
+  TextInput,
 } from 'react-native';
 
 const App = () => {
   const [list, setList] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newLatitude, setNewLatitude] = useState('');
+  const [newLongitude, setNewLongitude] = useState('');
 
   useEffect(() => {
     getData();
@@ -33,7 +38,6 @@ const App = () => {
     fetch(`https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users/${id}`, {
       method: 'DELETE',
     })
-      .then((res) => res.json())
       .then(() => {
         getData();
       })
@@ -42,13 +46,33 @@ const App = () => {
       });
   };
 
+  const updateData = () => {
+    const { id } = selectedItem;
+    const latitude = Math.random() * 90;
+    const longitude = Math.random() * 180;
+    fetch(`https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ latitude, longitude }),
+    }).then(() => {
+      setModalVisible(false);
+      setNewLatitude('');
+      setNewLongitude('');
+      getData();
+    }).catch((err) => {
+      console.log(err);
+    });
+  };
+  
   const addData = async () => {
-
+  
     const latitude = Math.random() * 90; 
     const longitude = Math.random() * 180;
     const currentDate = new Date();
     const datetime = currentDate.toLocaleString();
-
+  
     fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
       method: 'POST',
       headers: {
@@ -61,7 +85,6 @@ const App = () => {
       console.log(err);
     });
   };
-
 
   return (
     <SafeAreaView>
@@ -79,12 +102,56 @@ const App = () => {
               <Text>LAT       : {item.latitude}</Text>
               <Text>LONG    : {item.longitude}</Text>
             </View>
-            <TouchableOpacity onPress={() => deleteData(item.id)}>
-              <Text style={styles.deleteText}>Delete</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity onPress={() => {
+                setSelectedItem(item);
+                setModalVisible(true);
+              }}>
+                <Text style={styles.updateText}>Update</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => deleteData(item.id)}>
+                <Text style={styles.deleteText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         ))}
       </ScrollView>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalDate}>DATE: {selectedItem?.datetime}</Text>
+            <Text>LAT: {selectedItem?.latitude}</Text>
+            <Text>LONG: {selectedItem?.longitude}</Text>
+            <TouchableOpacity onPress={() => {
+              setNewLatitude((Math.random() * 90).toString());
+              setNewLongitude((Math.random() * 180).toString());
+            }}>
+              <Text style={styles.changeDataText}>Change Data</Text>
+            </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              onChangeText={setNewLatitude}
+              value={newLatitude}
+              placeholder="New Latitude"
+            />
+            <TextInput
+              style={styles.input}
+              onChangeText={setNewLongitude}
+              value={newLongitude}
+              placeholder="New Longitude"
+              />
+            <TouchableOpacity onPress={updateData}>
+              <Text style={styles.updateDataText}>Update Data</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -125,8 +192,48 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  updateText: {
+    color: 'blue',
+    marginRight: 10,
+  },
   deleteText: {
     color: 'red',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+  },
+  modalDate: {
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  changeDataText: {
+    color: 'blue',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    padding: 5,
+    marginBottom: 10,
+  },
+  updateDataText: {
+    color: 'green',
+    textAlign: 'center',
   },
 });
 

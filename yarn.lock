@@ -3024,6 +3024,7 @@ __metadata:
     prettier: 2.8.8
     react: 18.2.0
     react-native: 0.74.1
+    react-native-get-location: ^4.0.1
     react-test-renderer: 18.2.0
     typescript: 5.0.4
   languageName: unknown
@@ -7958,6 +7959,15 @@ __metadata:
   version: 17.0.2
   resolution: "react-is@npm:17.0.2"
   checksum: 9d6d111d8990dc98bc5402c1266a808b0459b5d54830bbea24c12d908b536df7883f268a7868cfaedde3dd9d4e0d574db456f84d2e6df9c4526f99bb4b5344d8
+  languageName: node
+  linkType: hard
+
+"react-native-get-location@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "react-native-get-location@npm:4.0.1"
+  peerDependencies:
+    react-native: ">=0.60"
+  checksum: c3d46d4a8d6daa6786424cb31d626ec8640665de5c8c4f576bf6fd1a84e2b0c8f6daa75621e62c76788de619e15ee84c8d9f669072a9d695aab0acb6d06e49e1
   languageName: node
   linkType: hard
 
