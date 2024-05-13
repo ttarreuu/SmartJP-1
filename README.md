@@ -1,4 +1,23 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+## About The Project
+
+https://github.com/ttarreuu/SmartJP-1/assets/104388212/8ea54c60-3f7c-4fa8-8747-900eca974c08
+
+<div style="display:flex; justify-content:space-around;">
+  <img src="https://github.com/ttarreuu/SmartJP-1/assets/104388212/6df6ec4b-2271-42a3-9088-cb6fcb661972" alt="Gambar 1" style="width:45%;">
+  <img src="https://github.com/ttarreuu/SmartJP-1/assets/104388212/bde1f0f4-e126-4bc9-96b8-f687e4afb050" alt="Gambar 2" style="width:45%;">
+</div>
+
+### Targeted RnD project:
+* Get
+* Post
+* Put
+* Delete
+
+
+
+
+
+>**Note**:This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
 
