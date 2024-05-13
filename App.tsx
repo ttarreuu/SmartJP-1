@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   PermissionsAndroid,
 } from 'react-native';
-import Geolocation from '@react-native-community/geolocation';
 
 const App = () => {
   const [list, setList] = useState([]);
@@ -43,41 +42,23 @@ const App = () => {
       });
   };
 
-  const addData = () => {
-    PermissionsAndroid.requestMultiple([
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-  ]).then((result) => {
-    if(
-      result['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED ||
-      result['android.permission.ACCESS_COARSE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED
-    ){
-      Geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
+  const addData = async () => {
 
-        const currentDate = new Date();
-        const datetime = currentDate.toLocaleString();
+    const latitude = Math.random() * 90; 
+    const longitude = Math.random() * 180;
+    const currentDate = new Date();
+    const datetime = currentDate.toLocaleString();
 
-        fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ datetime, latitude, longitude }),
-        }).then(() => {
-            getData();
-          }).catch((err) => {
-              console.log(err);
-            });
+    fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      (error) => {
-        console.log(error);
-      },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
-      );
-    } else {
-      console.log('Location permission denied');
-    }
+      body: JSON.stringify({ datetime, latitude, longitude }),
+    }).then(() => {
+      getData();
+    }).catch((err) => {
+      console.log(err);
     });
   };
 
