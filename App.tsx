@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
+import GetLocation from 'react-native-get-location';
 
 const App = () => {
   const [list, setList] = useState([]);
@@ -19,6 +20,11 @@ const App = () => {
 
   useEffect(() => {
     getData();
+    const interval = setInterval(() => {
+      addData();
+    }, 10000); // 10000 ms = 10 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   const getData = () => {
@@ -48,14 +54,12 @@ const App = () => {
 
   const updateData = () => {
     const { id } = selectedItem;
-    const latitude = Math.random() * 90;
-    const longitude = Math.random() * 180;
     fetch(`https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ latitude, longitude }),
+      body: JSON.stringify({ latitude: newLatitude, longitude: newLongitude }),
     }).then(() => {
       setModalVisible(false);
       setNewLatitude('');
@@ -65,25 +69,33 @@ const App = () => {
       console.log(err);
     });
   };
-  
+
   const addData = async () => {
-  
-    const latitude = Math.random() * 90; 
-    const longitude = Math.random() * 180;
-    const currentDate = new Date();
-    const datetime = currentDate.toLocaleString();
-  
-    fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ datetime, latitude, longitude }),
-    }).then(() => {
-      getData();
-    }).catch((err) => {
-      console.log(err);
-    });
+    try {
+      const location = await GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000,
+      });
+
+      const latitude = location.latitude;
+      const longitude = location.longitude;
+      const currentDate = new Date();
+      const datetime = currentDate.toLocaleString();
+
+      fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ datetime, latitude, longitude }),
+      }).then(() => {
+        getData();
+      }).catch((err) => {
+        console.log(err);
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
