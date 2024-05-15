@@ -29,10 +29,10 @@ const App = () => {
 
   useEffect(() => {
     initDatabase();
-    syncDataWithApi(); // Menjalankan sinkronisasi data saat aplikasi pertama kali dijalankan
+    syncDataWithApi(); 
     const interval = setInterval(() => {
       addData();
-    }, 10000); // 10000 ms = 10 seconds
+    }, 10000); 
 
     return () => clearInterval(interval);
   }, []);
@@ -64,7 +64,6 @@ const App = () => {
           console.log(err);
         });
       } else {
-        // Jika tidak terkoneksi, simpan data di database lokal
         await insertLocation({ datetime, latitude, longitude });
       }
     } catch (error) {
@@ -87,7 +86,6 @@ const App = () => {
           });
           await deleteLocation(location.id);
         }));
-        Alert.alert('Data synchronized successfully!');
       }
     } catch (error) {
       console.log(error);
