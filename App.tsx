@@ -8,8 +8,17 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
+  Alert,
 } from 'react-native';
 import GetLocation from 'react-native-get-location';
+import NetInfo from '@react-native-community/netinfo';
+import {
+  initDatabase,
+  insertLocation,
+  getLocations,
+  deleteLocation,
+  clearLocations,
+} from './database';
 
 const App = () => {
   const [list, setList] = useState([]);
@@ -19,13 +28,71 @@ const App = () => {
   const [newLongitude, setNewLongitude] = useState('');
 
   useEffect(() => {
-    getData();
+    initDatabase();
+    syncDataWithApi(); // Menjalankan sinkronisasi data saat aplikasi pertama kali dijalankan
     const interval = setInterval(() => {
       addData();
     }, 10000); // 10000 ms = 10 seconds
 
     return () => clearInterval(interval);
   }, []);
+
+  const addData = async () => {
+    try {
+      const location = await GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000,
+      });
+
+      const latitude = location.latitude;
+      const longitude = location.longitude;
+      const currentDate = new Date();
+      const datetime = currentDate.toLocaleString();
+
+      const isConnected = await NetInfo.fetch().then((state) => state.isConnected);
+      
+      if (isConnected) {
+        fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ datetime, latitude, longitude }),
+        }).then(() => {
+          getData();
+        }).catch((err) => {
+          console.log(err);
+        });
+      } else {
+        // Jika tidak terkoneksi, simpan data di database lokal
+        await insertLocation({ datetime, latitude, longitude });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const syncDataWithApi = async () => {
+    try {
+      const locations = await getLocations();
+      
+      if (locations.length > 0) {
+        await Promise.all(locations.map(async (location) => {
+          await fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(location),
+          });
+          await deleteLocation(location.id);
+        }));
+        Alert.alert('Data synchronized successfully!');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getData = () => {
     fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
@@ -68,34 +135,6 @@ const App = () => {
     }).catch((err) => {
       console.log(err);
     });
-  };
-
-  const addData = async () => {
-    try {
-      const location = await GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 15000,
-      });
-
-      const latitude = location.latitude;
-      const longitude = location.longitude;
-      const currentDate = new Date();
-      const datetime = currentDate.toLocaleString();
-
-      fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ datetime, latitude, longitude }),
-      }).then(() => {
-        getData();
-      }).catch((err) => {
-        console.log(err);
-      });
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (
