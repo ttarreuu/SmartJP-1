@@ -29,15 +29,14 @@ const App = () => {
 
   useEffect(() => {
     initDatabase();
-    syncDataWithApi(); 
     const interval = setInterval(() => {
-      addData();
+      handleAddData();
     }, 10000); 
 
     return () => clearInterval(interval);
   }, []);
 
-  const addData = async () => {
+  const handleAddData = async () => {
     try {
       const location = await GetLocation.getCurrentPosition({
         enableHighAccuracy: true,
@@ -49,23 +48,41 @@ const App = () => {
       const currentDate = new Date();
       const datetime = currentDate.toLocaleString();
 
-      const isConnected = await NetInfo.fetch().then((state) => state.isConnected);
+      const isConnected = await checkInternetConnection();
       
       if (isConnected) {
-        fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ datetime, latitude, longitude }),
-        }).then(() => {
-          getData();
-        }).catch((err) => {
-          console.log(err);
-        });
+        await syncDataWithApi();
+        await sendDataToApi({ datetime, latitude, longitude });
+        getData();
       } else {
-        await insertLocation({ datetime, latitude, longitude });
+        await sendDataToLocalDatabase({ datetime, latitude, longitude });
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const checkInternetConnection = async () => {
+    return await NetInfo.fetch().then((state) => state.isConnected);
+  };
+
+  const sendDataToApi = async (data) => {
+    try {
+      await fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const sendDataToLocalDatabase = async (data) => {
+    try {
+      await insertLocation(data);
     } catch (error) {
       console.log(error);
     }
@@ -77,14 +94,9 @@ const App = () => {
       
       if (locations.length > 0) {
         await Promise.all(locations.map(async (location) => {
-          await fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(location),
-          });
+          await sendDataToApi(location);
           await deleteLocation(location.id);
+          clearLocations();
         }));
       }
     } catch (error) {
@@ -139,7 +151,7 @@ const App = () => {
     <SafeAreaView>
       <View style={styles.header}>
         <Text style={styles.headerText}>List Data</Text>
-        <TouchableOpacity onPress={addData} style={styles.addButton}>
+        <TouchableOpacity onPress={handleAddData} style={styles.addButton}>
           <Text style={styles.addButtonText}>Add Data</Text>
         </TouchableOpacity>
       </View>
