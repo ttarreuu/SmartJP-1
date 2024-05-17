@@ -2646,6 +2646,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@supersami/rn-foreground-service@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@supersami/rn-foreground-service@npm:2.1.1"
+  peerDependencies:
+    react-native: ">=0.59.0"
+  checksum: 733d9449e0e95566449306656a8465207bb45d6ecbc5cce9694a64779e4128677de06a5aa7a55e6cc7a929ad32de751cbf0e465ad8f663229705780cd1b7c161
+  languageName: node
+  linkType: hard
+
 "@types/babel__core@npm:^7.1.14":
   version: 7.20.5
   resolution: "@types/babel__core@npm:7.20.5"
@@ -3026,6 +3035,7 @@ __metadata:
     "@react-native/eslint-config": 0.74.83
     "@react-native/metro-config": 0.74.83
     "@react-native/typescript-config": 0.74.83
+    "@supersami/rn-foreground-service": ^2.1.1
     "@types/react": ^18.2.6
     "@types/react-test-renderer": ^18.0.0
     babel-jest: ^29.6.3

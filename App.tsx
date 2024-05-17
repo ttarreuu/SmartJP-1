@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Alert,
 } from 'react-native';
 import GetLocation from 'react-native-get-location';
 import NetInfo from '@react-native-community/netinfo';
@@ -228,7 +227,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: 'bold',
-  },
+  },   
   addButton: {
     padding: 5,
     backgroundColor: 'green',
