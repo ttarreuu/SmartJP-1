@@ -67,7 +67,7 @@ const App = () => {
 
   const sendDataToApi = async (data) => {
     try {
-      await fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
+      await fetch('https://6662b64562966e20ef09a745.mockapi.io/location/v2/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ const App = () => {
   };
 
   const getData = () => {
-    fetch('https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users', {
+    fetch('https://6662b64562966e20ef09a745.mockapi.io/location/v2/users', {
       method: 'GET',
     })
       .then((res) => res.json())
@@ -117,7 +117,7 @@ const App = () => {
   };
 
   const deleteData = (id) => {
-    fetch(`https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users/${id}`, {
+    fetch(`https://6662b64562966e20ef09a745.mockapi.io/location/v2/users/${id}`, {
       method: 'DELETE',
     })
       .then(() => {
@@ -130,7 +130,7 @@ const App = () => {
 
   const updateData = () => {
     const { id } = selectedItem;
-    fetch(`https://6639cbd81ae792804beccbdc.mockapi.io/location/v1/users/${id}`, {
+    fetch(`https://6662b64562966e20ef09a745.mockapi.io/location/v2/users/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
